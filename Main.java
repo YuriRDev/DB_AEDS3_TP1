@@ -13,8 +13,9 @@ class Main {
         String[] a = {"abc", "cde"};
         Empresa teste = new Empresa(0, "Teste", a, 10);
 
-        Database myDB = new Database("myDb.db");
-        myDB.create(teste);
+        System.out.println(teste.getSizeOfObject());
+        // Database myDB = new Database("myDb.db");
+        // myDB.create(teste);
         // getUserInput();
 
 

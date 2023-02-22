@@ -6,9 +6,11 @@ import Entities.Empresa;
 
 public class CsvImport {
     BufferedReader reader;
+    Database currentDatabase;
 
     /* Constructor */
-    CsvImport(String path) throws Exception {
+    CsvImport(String path, Database createdDB) throws Exception {
+        this.currentDatabase = createdDB;
         try {
             this.reader = new BufferedReader(new FileReader((path)));
 
@@ -36,7 +38,7 @@ public class CsvImport {
      * @param line Line that is going to be parsed
      * @param id Integer that especifies the current ID to save on the DB
      */
-    public void getDataFromLine(String line, int id) {
+    public void getDataFromLine(String line, int id) throws IOException {
         String[] parsedLine = (line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1));
 
         // created at HERE
@@ -49,6 +51,6 @@ public class CsvImport {
         float funding = Float.parseFloat(parsedLine[4].replaceAll("-", "0"));
 
         Empresa tmp = new Empresa(id, nome, categories, funding);
-        tmp.print();
+        this.currentDatabase.create(tmp);
     }
 }
