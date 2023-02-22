@@ -69,4 +69,25 @@ public class Empresa {
         // Save all the info to the DB folder
     }
 
+    public int getSizeOfObject() {
+        int sizeOfId = 4;
+        int sizeOfFunding = 4;
+        int sizeOfCreatedAt = 32;
+
+        // Cada char ocupa 2 bytes + 4 bytes de inteiro para indicar o tamanho da string
+        int sizeOfNome = (nome.length() * 2) + 4;
+
+        // Size da quantidade de categorias
+        int sizeOfCategoriesLengh = 4;
+
+        int sizeOfCategories = 0;
+        for (String categoria : categories) {
+            // Cada char ocupa 2 bytes + 4 bytes de inteiro para indicar o tamanho da string
+            sizeOfCategories += (categoria.length() * 2) + 4;
+        }
+
+        return sizeOfId + sizeOfFunding + sizeOfCreatedAt + sizeOfNome + sizeOfCategoriesLengh + sizeOfCategories;
+
+    }
+
 }
