@@ -9,16 +9,11 @@ import Query.Search;
 class Main {
     static Scanner sc = new Scanner(System.in);
 
-    public static void main(String[] args) throws IOException {
-        String[] a = {"abc", "cde"};
-        Empresa teste = new Empresa(0, "Teste", a, 10);
+    public static void main(String[] args) throws Exception {
 
-        System.out.println(teste.getSizeOfObject());
-        // Database myDB = new Database("myDb.db");
-        // myDB.create(teste);
-        // getUserInput();
-
-
+        Database myDB = new Database("myDb.db");
+        CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+        myDB.closeFile();
     }
 
     public static void getUserInput() {
