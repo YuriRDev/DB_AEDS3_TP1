@@ -11,13 +11,14 @@ public class Database {
     };
 
     Database(String path) throws FileNotFoundException {
-        fileOs = new FileOutputStream("path");
+        fileOs = new FileOutputStream(path);
     };
 
     /** Save Empresa to the current DB path */
     public void create(Empresa empresa) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+       DataOutputStream daos = new DataOutputStream(fileOs);
 
+       daos.writeInt();
     }
 
 }

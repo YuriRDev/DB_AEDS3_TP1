@@ -1,9 +1,10 @@
 package Entities;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Empresa {
+public class Empresa implements Serializable {
     int id;
     String nome;
     String[] categories;
@@ -65,8 +66,6 @@ public class Empresa {
         System.out.println();
     }
 
-    public void saveToDB() {
-        // Save all the info to the DB folder
-    }
-
 }
+
+
