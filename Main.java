@@ -11,7 +11,7 @@ class Main {
 
     public static void main(String[] args) throws IOException {
         String[] a = {"abc", "cde"};
-        Empresa teste = new Empresa(0, "Teste", a, 0);
+        Empresa teste = new Empresa(0, "Teste", a, 10);
 
         Database myDB = new Database("myDb.db");
         myDB.create(teste);

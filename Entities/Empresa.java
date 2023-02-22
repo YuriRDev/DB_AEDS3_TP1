@@ -3,6 +3,8 @@ package Entities;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.text.FlowView;
+
 public class Empresa {
     int id;
     String nome;
@@ -31,6 +33,31 @@ public class Empresa {
         this.categories = categories;
         this.funding = funding;
         this.created_at = created_at;
+    }
+
+    /** Getters */
+    public int getId() {
+        return this.id;
+    }
+
+    public String getNome() {
+        return this.nome;
+    }
+
+    public float getFunding() {
+        return this.funding;
+    }
+
+    public Date getCreatedAt() {
+        return this.created_at;
+    }
+    
+    public String[] getCategories() {
+        return this.categories;
+    }
+
+    public long getCreatedAtAsLong() {
+        return created_at.getTime();
     }
 
     /** Setters */
@@ -72,7 +99,7 @@ public class Empresa {
     public int getSizeOfObject() {
         int sizeOfId = 4;
         int sizeOfFunding = 4;
-        int sizeOfCreatedAt = 32;
+        int sizeOfCreatedAt = 8;
 
         // Cada char ocupa 2 bytes + 4 bytes de inteiro para indicar o tamanho da string
         int sizeOfNome = (nome.length() * 2) + 4;
