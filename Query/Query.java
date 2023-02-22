@@ -67,7 +67,15 @@ public class Query {
     }
 
     public void checkIfAttributeExists(String text, String splitSign) {
+        String attribute = text.split(splitSign)[0];
 
+        for (String s : attributes) {
+            if(attribute.equals(s)) {
+                return;
+            }
+        }
+
+        throw new Error("Attribute not found. Received: " + attribute);
     }
 
 
