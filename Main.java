@@ -10,12 +10,14 @@ class Main {
     static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException {
-        // String[] a = {"abc", "cde"};
-        // Empresa teste = new Empresa(0, "Teste", a, 0);
+        String[] a = {"abc", "cde"};
+        Empresa teste = new Empresa(0, "Teste", a, 0);
 
-        // Database myDB = new Database("myDb.db");
-        // myDB.create(teste);
-        getUserInput();
+        Database myDB = new Database("myDb.db");
+        myDB.create(teste);
+        // getUserInput();
+
+
     }
 
     public static void getUserInput() {
