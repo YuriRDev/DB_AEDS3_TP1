@@ -1,5 +1,11 @@
 package Entities;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOError;
+import java.io.IOException;
+import java.io.WriteAbortedException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -96,25 +102,22 @@ public class Empresa {
         // Save all the info to the DB folder
     }
 
-    public int getSizeOfObject() {
-        int sizeOfId = 4;
-        int sizeOfFunding = 4;
-        int sizeOfCreatedAt = 8;
+    // // Convert attributes to byte array
+    public byte[] toByteArr() throws IOException {
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        DataOutputStream byteData = new DataOutputStream(byteOutput);
 
-        // Cada char ocupa 2 bytes + 4 bytes de inteiro para indicar o tamanho da string
-        int sizeOfNome = (nome.length() * 2) + 4;
-
-        // Size da quantidade de categorias
-        int sizeOfCategoriesLengh = 4;
-
-        int sizeOfCategories = 0;
-        for (String categoria : categories) {
-            // Cada char ocupa 2 bytes + 4 bytes de inteiro para indicar o tamanho da string
-            sizeOfCategories += (categoria.length() * 2) + 4;
+        byteData.writeInt(id);
+        byteData.writeFloat(funding);
+        byteData.writeLong(this.getCreatedAtAsLong());
+        byteData.writeInt(nome.getBytes(Charset.forName("UTF-8")).length);
+        byteData.writeUTF(nome);
+        byteData.writeInt(categories.length);
+        for(String category : categories) {
+            byteData.writeInt(category.getBytes(Charset.forName("UTF-8")).length);
+            byteData.writeUTF(category);
         }
 
-        return sizeOfId + sizeOfFunding + sizeOfCreatedAt + sizeOfNome + sizeOfCategoriesLengh + sizeOfCategories;
-
+        return byteOutput.toByteArray();    
     }
-
 }
