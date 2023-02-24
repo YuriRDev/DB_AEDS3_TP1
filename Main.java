@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.Scanner;
 
+import javax.xml.crypto.Data;
+
 import Entities.Empresa;
 import Query.Create;
 import Query.Query;
