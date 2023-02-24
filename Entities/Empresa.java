@@ -98,10 +98,6 @@ public class Empresa {
         System.out.println();
     }
 
-    public void saveToDB() {
-        // Save all the info to the DB folder
-    }
-
     // // Convert attributes to byte array
     public byte[] toByteArr() throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
