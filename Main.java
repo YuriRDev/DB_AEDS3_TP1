@@ -17,8 +17,11 @@ class Main {
         CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         // getUserInput(myDB);
 
-        Empresa tmp = myDB.readFromSeek(51);
+        // Empresa tmp = myDB.readFromSeek(51);
+        
+        Empresa tmp = myDB.findByIdSequencially(240);
         System.out.println("[" + tmp.getId() + "] " + tmp.getNome() + ", " + tmp.getFunding() + ", ");
+    
     }
 
     public static void getUserInput(Database database) throws IOException {
