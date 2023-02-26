@@ -1,11 +1,9 @@
 import java.io.*;
 import java.util.Scanner;
 
-import javax.xml.crypto.Data;
 
 import Entities.Empresa;
 import Query.Create;
-import Query.Query;
 import Query.Search;
 
 class Main {
@@ -21,6 +19,7 @@ class Main {
         
         Empresa tmp = myDB.findByIdSequencially(240);
         System.out.println("[" + tmp.getId() + "] " + tmp.getNome() + ", " + tmp.getFunding() + ", ");
+        myDB.closeFile();
     
     }
 

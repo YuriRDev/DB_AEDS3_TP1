@@ -1,5 +1,4 @@
 import java.io.*;
-import java.nio.charset.Charset;
 
 import Entities.Empresa;
 

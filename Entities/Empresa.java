@@ -1,18 +1,9 @@
 package Entities;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOError;
-import java.io.IOException;
-import java.io.WriteAbortedException;
-import java.nio.ByteBuffer;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import javax.swing.text.FlowView;
 
 public class Empresa {
     int id;
