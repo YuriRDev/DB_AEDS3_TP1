@@ -11,14 +11,15 @@ class Main {
     public static void main(String[] args) throws Exception {
 
         Database myDB = new Database("myDb.db");
-        // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+        CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         // getUserInput(myDB);
 
         // Empresa tmp = myDB.readFromSeek(51);
 
-        Empresa tmp = myDB.findByIdSequencially(559);
-        System.out.println("[" + tmp.getId() + "] " + tmp.getNome() + ", " +
-        tmp.getFunding() + ", ");
+        Empresa tmp = myDB.findByIdSequencially(558);
+        tmp.print();
+
+        // getUserInput(myDB);
         // getUserInput(myDB);
         // System.out.println(myDB.getCurrentSizeOfEntities());
     }
@@ -31,8 +32,9 @@ class Main {
             Create createQuery = new Create(input.split("CREATE ")[1]);
 
             Empresa returnEmpresa = createQuery.returnEmpresaCreated();
+            System.out.println(database.getCurrentSizeOfEntities() + 1);
             returnEmpresa.setId(database.getCurrentSizeOfEntities() + 1);
-            
+
             database.writeEmpresaOnDb(returnEmpresa);
         } else if (verb.equals("SELECT")) {
             Search searchQuery = new Search(input.split("SELECT ")[1]);

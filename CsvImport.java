@@ -14,7 +14,7 @@ public class CsvImport {
             this.reader = new BufferedReader(new FileReader((path)));
 
             String line = reader.readLine();
-            int i = 1;
+            int i = currentDatabase.getCurrentSizeOfEntities() + 1;
             // Pular primeira linha
             line = reader.readLine();
             // Continuar lendo

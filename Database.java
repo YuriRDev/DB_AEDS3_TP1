@@ -43,12 +43,12 @@ public class Database {
      * Search on the metadados of the DB file the current size of Entities created.
      */
     public int getCurrentSizeOfEntities() throws IOException {
-        RandomAccessFile file = new RandomAccessFile(path, "r");
+        RandomAccessFile file = new RandomAccessFile(path, "rw");
 
 
         file.seek(0); // First seek to read if is empty
         if (file.read() == -1)
-            return 1; // case if file is empty
+            return 0; // case if file is empty
 
         file.seek(0); // Second seek to read the integer
         int currentLength = file.readInt();
