@@ -1,26 +1,26 @@
 import java.io.*;
 import java.util.Scanner;
 
-
 import Entities.Empresa;
 import Query.Create;
 import Query.Search;
 
 class Main {
     static Scanner sc = new Scanner(System.in);
-    
+
     public static void main(String[] args) throws Exception {
-        
+
         Database myDB = new Database("myDb.db");
-        CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+        // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         // getUserInput(myDB);
 
         // Empresa tmp = myDB.readFromSeek(51);
-        
-        Empresa tmp = myDB.findByIdSequencially(240);
-        System.out.println("[" + tmp.getId() + "] " + tmp.getNome() + ", " + tmp.getFunding() + ", ");
-        myDB.closeFile();
-    
+
+        Empresa tmp = myDB.findByIdSequencially(559);
+        System.out.println("[" + tmp.getId() + "] " + tmp.getNome() + ", " +
+        tmp.getFunding() + ", ");
+        // getUserInput(myDB);
+        // System.out.println(myDB.getCurrentSizeOfEntities());
     }
 
     public static void getUserInput(Database database) throws IOException {
@@ -29,10 +29,11 @@ class Main {
 
         if (verb.equals("CREATE")) {
             Create createQuery = new Create(input.split("CREATE ")[1]);
-            
-            Empresa returnEmpresa = createQuery.returnEmpresaCreated();
-            database.writeEmpresaOnDb(returnEmpresa);
 
+            Empresa returnEmpresa = createQuery.returnEmpresaCreated();
+            returnEmpresa.setId(database.getCurrentSizeOfEntities() + 1);
+            
+            database.writeEmpresaOnDb(returnEmpresa);
         } else if (verb.equals("SELECT")) {
             Search searchQuery = new Search(input.split("SELECT ")[1]);
         } else {
