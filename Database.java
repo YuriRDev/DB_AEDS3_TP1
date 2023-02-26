@@ -32,17 +32,16 @@ public class Database {
      * 
      * @param filePointer current byte that will be read
      */
-    public long writeEmpresaOnDb(Empresa empresa, long filePointer) throws IOException {
+    public void writeEmpresaOnDb(Empresa empresa) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
-
-        long pos = filePointer;
         byte[] byteArr;
 
-        /** Sobreescreve a quantidade total */
-        raf.writeInt(this.getCurrentSizeOfEntities(raf, filePointer));
 
-        if (pos > 0)
-            raf.seek(pos);
+        /** Sobreescreve a quantidade total */
+        raf.writeInt(getCurrentSizeOfEntities(raf));
+
+        /* Set the pointer to the end of the file */
+        raf.seek(raf.length());
 
         /** Write Empresa data */
         byteArr = empresa.toByteArr();
@@ -50,23 +49,22 @@ public class Database {
         raf.writeBoolean(true);
         raf.write(byteArr);
 
-        pos = raf.getFilePointer();
         raf.close();
 
-        return pos;
     }
 
     /**
      * Search on the metadados of the DB file the current size of Entities created.
      */
-    public int getCurrentSizeOfEntities(RandomAccessFile file, long filePointer) throws IOException {
-        if (filePointer == 0)
-            return 1;
-
-        file.seek(0);
+    public int getCurrentSizeOfEntities(RandomAccessFile file) throws IOException {
+        file.seek(0); // First seek to read if is empty
+        if(file.read() == -1) return 1; // case if file is empty
+        
+        file.seek(0); // Second seek to read the integer
         int currentLength = file.readInt() + 1;
-
+        file.seek(0); // Third seek to position the pointer on the first byte again.
         return currentLength;
     }
+
 
 }

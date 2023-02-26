@@ -15,7 +15,6 @@ class Main {
 
         Database myDB = new Database("myDb.db");
         CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
-        myDB.closeFile();
     }
 
     public static void getUserInput() {

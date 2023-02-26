@@ -22,7 +22,7 @@ public class CsvImport {
             // Continuar lendo
 
             while (line != null) {
-                filePointer = getDataFromLine(line, i, filePointer);
+                getDataFromLine(line, i, filePointer);
                 line = reader.readLine();
                 i++;
             }
@@ -38,19 +38,16 @@ public class CsvImport {
      * @param line Line that is going to be parsed
      * @param id   Integer that especifies the current ID to save on the DB
      */
-    public long getDataFromLine(String line, int id, long filePointer) throws IOException {
+    public void getDataFromLine(String line, int id, long filePointer) throws IOException {
         String[] parsedLine = (line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1));
 
-        // created at HERE
-        // updated at HERE
-
         String nome = parsedLine[1].replaceAll("\"", "");
-        String categoriesUnparsed = (parsedLine[3]); // Separadados por |
+        String categoriesUnparsed = parsedLine[3]; // Separadados por |
         String[] categories = categoriesUnparsed.split("@@");
 
         float funding = Float.parseFloat(parsedLine[4].replaceAll("-", "0"));
 
         Empresa tmp = new Empresa(id, nome, categories, funding);
-        return this.currentDatabase.writeEmpresaOnDb(tmp, filePointer);
+        currentDatabase.writeEmpresaOnDb(tmp);
     }
 }
