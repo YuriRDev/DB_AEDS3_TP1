@@ -9,19 +9,14 @@ class Main {
     static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
-
         Database myDB = new Database("myDb.db");
-        CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
-        // getUserInput(myDB);
-
-        // Empresa tmp = myDB.readFromSeek(51);
-
-        Empresa tmp = myDB.findByIdSequencially(558);
-        tmp.print();
-
-        // getUserInput(myDB);
-        // getUserInput(myDB);
         // System.out.println(myDB.getCurrentSizeOfEntities());
+
+        // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+        // getUserInput(myDB);
+
+        Empresa tmp = myDB.findByIdSequencially(559);
+        tmp.print();
     }
 
     public static void getUserInput(Database database) throws IOException {
