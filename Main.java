@@ -10,21 +10,27 @@ import Query.Search;
 
 class Main {
     static Scanner sc = new Scanner(System.in);
-
+    
     public static void main(String[] args) throws Exception {
-
+        
         Database myDB = new Database("myDb.db");
         CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+        // getUserInput(myDB);
+
+        Empresa tmp = myDB.readFromSeek(51);
+        System.out.println("[" + tmp.getId() + "] " + tmp.getNome() + ", " + tmp.getFunding() + ", ");
     }
 
-    public static void getUserInput() {
+    public static void getUserInput(Database database) throws IOException {
         String input = sc.nextLine();
         String verb = input.split(" ")[0];
 
         if (verb.equals("CREATE")) {
             Create createQuery = new Create(input.split("CREATE ")[1]);
+            
             Empresa returnEmpresa = createQuery.returnEmpresaCreated();
-            returnEmpresa.print();
+            database.writeEmpresaOnDb(returnEmpresa);
+
         } else if (verb.equals("SELECT")) {
             Search searchQuery = new Search(input.split("SELECT ")[1]);
         } else {

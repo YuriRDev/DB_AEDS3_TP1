@@ -66,5 +66,105 @@ public class Database {
         return currentLength;
     }
 
+    public Empresa readFirst() throws IOException {
+        RandomAccessFile file = new RandomAccessFile(path, "r");
 
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        DataOutputStream byteData = new DataOutputStream(byteOutput);
+        
+        // Jump the first 4 bytes ( length of entities)
+        file.seek(4);
+
+        /** Metadados  */
+        byteData.writeInt(file.readInt()); // Byte in length
+        byteData.writeBoolean(file.readBoolean()); // IsValid
+        
+        /** Object In Bytes */
+        byteData.writeInt(file.readInt()); // ID
+        byteData.writeFloat(file.readFloat()); // Funding
+        byteData.writeLong(file.readLong()); // Created_At
+
+        byteData.writeInt(file.readInt()); // Name Length
+        byteData.writeUTF(file.readUTF()); // Name
+
+        int categoriesLength = file.readInt();
+        byteData.writeInt(categoriesLength);
+
+        for(int i =0; i < categoriesLength; i++){
+            byteData.writeInt(file.readInt());
+            byteData.writeUTF(file.readUTF());
+        }
+
+        Empresa novaEmpresa = new Empresa();
+        novaEmpresa.fromByteArr(byteOutput.toByteArray());
+
+        file.close();
+
+        return novaEmpresa;
+    }
+
+
+    /**
+     * Read an byteArray from a specific byte 
+     * 
+     * @param seekValue must be > 4
+     */
+    public Empresa readFromSeek(int seekValue) throws IOException {
+        if(seekValue <= 4) throw new Error("Seek value must be more than 4");
+
+        RandomAccessFile file = new RandomAccessFile(path, "r");
+
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        DataOutputStream byteData = new DataOutputStream(byteOutput);
+        
+        file.seek(seekValue);
+        checkIfByteArrayIsFromEmpresa(file);
+        file.seek(seekValue);
+
+        /** Metadados  */
+        byteData.writeInt(file.readInt()); // Byte in length
+        byteData.writeBoolean(file.readBoolean()); // IsValid
+        
+        /** Object In Bytes */
+        byteData.writeInt(file.readInt()); // ID
+        byteData.writeFloat(file.readFloat()); // Funding
+        byteData.writeLong(file.readLong()); // Created_At
+
+        byteData.writeInt(file.readInt()); // Name Length
+        byteData.writeUTF(file.readUTF()); // Name
+
+        int categoriesLength = file.readInt();
+        byteData.writeInt(categoriesLength);
+
+        for(int i =0; i < categoriesLength; i++){
+            byteData.writeInt(file.readInt());
+            byteData.writeUTF(file.readUTF());
+        }
+
+        Empresa novaEmpresa = new Empresa();
+        novaEmpresa.fromByteArr(byteOutput.toByteArray());
+
+        file.close();
+
+        return novaEmpresa;
+    }
+
+
+    /**
+     *  Check if current ByteArray is from the empresa entity
+     *  
+     *  <h3>Currently not working the throw...</h3>
+     */
+    public void checkIfByteArrayIsFromEmpresa(RandomAccessFile file) throws IOException {
+        try {
+            file.readInt();
+            file.readBoolean();
+            file.readInt();
+            file.readFloat();
+            file.readLong();
+        } catch (IOException e) {
+            file.close();
+            throw new Error("Error... This byte is probable not from the start of a entity");
+        }
+    }
 }

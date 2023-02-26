@@ -73,6 +73,7 @@ public class Create extends Query {
         Empresa tmp = new Empresa();
         tmp.setNome(this.name);
         tmp.setCategories(this.categories);
+        for(String s: categories) System.out.println(s);
         tmp.setFunding(this.funding);
 
         return tmp;

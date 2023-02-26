@@ -1,10 +1,13 @@
 package Entities;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.WriteAbortedException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -115,5 +118,31 @@ public class Empresa {
         }
 
         return byteOutput.toByteArray();    
+    }
+
+    public void fromByteArr(byte[] byteArr) throws IOException {
+        ByteArrayInputStream bytesInput = new ByteArrayInputStream(byteArr);
+        DataInputStream byteData = new DataInputStream(bytesInput);
+
+        /** Metadados */
+        int byteLenght = byteData.readInt();
+        boolean valid = byteData.readBoolean();
+
+        /** Object info */
+        this.id = byteData.readInt();
+        this.funding = byteData.readFloat();
+        this.created_at = new Date(byteData.readLong());
+
+        int nameLength = byteData.readInt();
+        this.nome = byteData.readUTF();
+
+        int categoriesLength = byteData.readInt();
+        this.categories = new String[categoriesLength];
+
+        for(int i =0; i< categoriesLength; i++){
+            // Read current lenght of this category
+            byteData.readInt();
+            this.categories[i] = byteData.readUTF();
+        }
     }
 }
