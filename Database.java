@@ -1,6 +1,7 @@
 import java.io.*;
 
 import Entities.Empresa;
+import Query.Update;
 
 public class Database {
     String path;
@@ -44,7 +45,6 @@ public class Database {
      */
     public int getCurrentSizeOfEntities() throws IOException {
         RandomAccessFile file = new RandomAccessFile(path, "rw");
-
 
         file.seek(0); // First seek to read if is empty
         if (file.read() == -1)
@@ -146,7 +146,7 @@ public class Database {
             throw new Error("Could not find the ID");
         }
 
-        long filePointer = 0; //file pointer to be returned
+        long filePointer = 0; // file pointer to be returned
         int currentSize = file.readInt();
         boolean isValid = file.readBoolean();
         int currentId = file.readInt();
@@ -156,14 +156,14 @@ public class Database {
             if (id == currentId && isValid) {
                 filePointer = file.getFilePointer();
                 currentSize = (int) file.length(); // Break operation
-            }else {
+            } else {
                 file.seek(currentSize + 4);
                 currentSize += file.readInt();
                 isValid = file.readBoolean();
                 currentId = file.readInt();
             }
         }
-        
+
         if (id != currentId) {
             file.close();
             throw new Error("Could not find the ID");
@@ -175,24 +175,22 @@ public class Database {
         return returnedEmpresa;
     }
 
-
-    /** 
+    /**
      * Search an entity by it's id
      * And get the file pointer value to the first byte
      * 
-     * @param id must be > 0 
+     * @param id must be > 0
      * @throws IOExecption if ID not found.
      */
     public long findEmpresaFilePointerById(int id) throws IOException {
-        if (id <= 0) 
+        if (id <= 0)
             throw new IOException("ID must be more than 0.");
 
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
 
-        /*Check for ID avaliability */
+        /* Check for ID avaliability */
         if (id > raf.readInt())
             throw new IOException("Could not find the ID.");
-
 
         long filePointer = 0; // File pointer to be returned
         int currentSize = raf.readInt();
@@ -204,7 +202,7 @@ public class Database {
             if (currentID == id && isValid) {
                 filePointer = raf.getFilePointer();
                 currentSize = (int) raf.length(); // Break operation
-            }else {
+            } else {
                 raf.seek(currentSize + 4);
                 currentSize += raf.readInt();
                 isValid = raf.readBoolean();
@@ -217,16 +215,13 @@ public class Database {
             throw new IOException("ID does not exist or was deleted.");
         }
 
-        long returnPosition = filePointer - 4 - 1; // 4 from id, 1 for boolean 
+        long returnPosition = filePointer - 4 - 1; // 4 from id, 1 for boolean
         raf.close();
-        
+
         return returnPosition;
     }
 
-
-
-    /* Delete Function */
-    public void delete(int id) throws IOException {
+    public void deleteEmpresaById(int id) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
 
         long pos = findEmpresaFilePointerById(id);
@@ -235,6 +230,16 @@ public class Database {
         raf.writeBoolean(false);
 
         raf.close();
+    }
+
+    public void updateEmpresaById(int id, Empresa novosDados) throws IOException{
+        Empresa empresaFound = findEmpresaByIdSequencially(id);
+    
+        // se o nome da novosDados for null, nao altera o nome
+
+        // se o funding da novosDados for -1, nao altera o funding
+        
+        // se a categorie da novosDados for null, nao altera a categoria
     }
 
 }

@@ -19,6 +19,14 @@ public class Empresa {
         this.created_at = new Date();
     }
 
+    public Empresa(String nome, String[] categories, float funding) {
+        this.id = id;
+        this.nome = nome;
+        this.categories = categories;
+        this.funding = funding;
+        this.created_at = new Date();
+    }
+
     public Empresa(int id, String nome, String[] categories, float funding) {
         this.id = id;
         this.nome = nome;
