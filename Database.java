@@ -185,12 +185,17 @@ public class Database {
         if (id > raf.readInt())
             throw new IOException("Could not find the ID.");
 
+
         int currentSize = raf.readInt();
         boolean isValid = raf.readBoolean();
         int currentID = raf.readInt();
 
         /* Run until ID is different */
-        while (id != currentID) {
+        do {
+
+            if (!isValid) {
+                raf.seek(currentSize+4); //Skip if file is invalid
+            }
 
             if (id != currentID) {
                 raf.seek(currentSize + 4); // +4 because of the first int on header. 
@@ -199,11 +204,12 @@ public class Database {
             currentSize += raf.readInt();
             isValid = raf.readBoolean();
             currentID = raf.readInt();
-        }
+
+        } while(id != currentID);
 
         if (id != currentID) {
             raf.close();
-            throw new IOException("Could not find the ID.");
+            throw new IOException("ID does not exist or was deleted.");
         }
 
         long currentPos = raf.getFilePointer();
