@@ -149,10 +149,10 @@ public class Database {
         boolean isValid = file.readBoolean();
         int currentId = file.readInt();
 
-        /** Percorrer enquanto o ID for diferente do Current e o valido for true */
-        while (id != currentId && isValid ) {
+        /** Percorrer enquanto o ID for diferente do Current*/
+        while (id != currentId) {
 
-            if (id != currentId && isValid) {
+            if (id != currentId) {
                 file.seek(currentSize + 4); // +4 because of the first int on the header
             }
             currentSize += file.readInt();
@@ -169,6 +169,63 @@ public class Database {
 
         file.close();
         return returnedEmpresa;
+    }
+
+
+    /** Return FilePointer of ID
+     * 
+     */
+    public long idFilePointer(int id) throws IOException {
+        if (id <= 0) 
+            throw new IOException("ID must be more than 0.");
+
+        RandomAccessFile raf = new RandomAccessFile(path, "rw");
+
+        /*Check for ID avaliability */
+        if (id > raf.readInt())
+            throw new IOException("Could not find the ID.");
+
+        int currentSize = raf.readInt();
+        boolean isValid = raf.readBoolean();
+        int currentID = raf.readInt();
+
+        /* Run until ID is different */
+        while (id != currentID) {
+
+            if (id != currentID) {
+                raf.seek(currentSize + 4); // +4 because of the first int on header. 
+            }
+
+            currentSize += raf.readInt();
+            isValid = raf.readBoolean();
+            currentID = raf.readInt();
+        }
+
+        if (id != currentID) {
+            raf.close();
+            throw new IOException("Could not find the ID.");
+        }
+
+        long currentPos = raf.getFilePointer();
+        long returnPosition = currentPos - 4 - 1; // 4 from id, 1 for boolean 
+
+        raf.close();
+        
+        return returnPosition;
+    }
+
+
+
+    /* Delete Function */
+    public void delete(int id) throws IOException {
+        RandomAccessFile raf = new RandomAccessFile(path, "rw");
+
+        long pos = idFilePointer(id);
+
+        raf.seek(pos);
+        raf.writeBoolean(false);
+
+        raf.close();
     }
 
 }
