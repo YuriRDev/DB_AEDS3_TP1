@@ -129,11 +129,12 @@ public class Database {
     }
 
     /**
+     * Find an empresa object sequentially by it's id
      * 
      * @param id Must be > 0
      * @throws Error if could not find it
      */
-    public Empresa findByIdSequencially(int id) throws IOException {
+    public Empresa findEmpresaByIdSequencially(int id) throws IOException {
         if (id <= 0)
             throw new Error("Id must be more than 0");
 
@@ -172,10 +173,13 @@ public class Database {
     }
 
 
-    /** Return FilePointer of ID
+    /** 
+     * Search an entity by it's id
+     * And get the file pointer value to the first byte
      * 
+     * @param id must be > 0 
      */
-    public long idFilePointer(int id) throws IOException {
+    public long findEmpresaFilePointerById(int id) throws IOException {
         if (id <= 0) 
             throw new IOException("ID must be more than 0.");
 
@@ -226,7 +230,7 @@ public class Database {
     public void delete(int id) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
 
-        long pos = idFilePointer(id);
+        long pos = findEmpresaFilePointerById(id);
 
         raf.seek(pos);
         raf.writeBoolean(false);

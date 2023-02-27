@@ -15,7 +15,7 @@ class Main {
         // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         // getUserInput(myDB);
 
-        Empresa tmp = myDB.findByIdSequencially(559);
+        Empresa tmp = myDB.findEmpresaByIdSequencially(559);
         tmp.print();
     }
 
