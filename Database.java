@@ -146,27 +146,29 @@ public class Database {
             throw new Error("Could not find the ID");
         }
 
+        long filePointer = 0; //file pointer to be returned
         int currentSize = file.readInt();
         boolean isValid = file.readBoolean();
         int currentId = file.readInt();
 
-        /** Percorrer enquanto o ID for diferente do Current*/
-        while (id != currentId) {
+        while (currentSize < file.length()) {
 
-            if (id != currentId) {
-                file.seek(currentSize + 4); // +4 because of the first int on the header
+            if (id == currentId && isValid) {
+                filePointer = file.getFilePointer();
+                currentSize = (int) file.length(); // Break operation
+            }else {
+                currentSize += file.readInt();
+                isValid = file.readBoolean();
+                currentId = file.readInt();
             }
-            currentSize += file.readInt();
-            isValid = file.readBoolean();
-            currentId = file.readInt();
         }
-
+        
         if (id != currentId) {
             file.close();
             throw new Error("Could not find the ID");
         }
 
-        Empresa returnedEmpresa = readFromSeek((file.getFilePointer() - 4 - 4 - 1));
+        Empresa returnedEmpresa = readFromSeek((filePointer - 4 - 4 - 1));
 
         file.close();
         return returnedEmpresa;
@@ -190,35 +192,30 @@ public class Database {
             throw new IOException("Could not find the ID.");
 
 
+        long filePointer = 0; // File pointer to be returned
         int currentSize = raf.readInt();
         boolean isValid = raf.readBoolean();
         int currentID = raf.readInt();
 
-        /* Run until ID is different */
-        do {
+        while (currentSize < raf.length()) {
 
-            if (!isValid) {
-                raf.seek(currentSize+4); //Skip if file is invalid
+            if (currentID == id && isValid) {
+                filePointer = raf.getFilePointer();
+                currentSize = (int) raf.length(); // Break operation
+            }else {
+                raf.seek(currentSize + 4);
+                currentSize += raf.readInt();
+                isValid = raf.readBoolean();
+                currentID = raf.readInt();
             }
-
-            if (id != currentID) {
-                raf.seek(currentSize + 4); // +4 because of the first int on header. 
-            }
-
-            currentSize += raf.readInt();
-            isValid = raf.readBoolean();
-            currentID = raf.readInt();
-
-        } while(id != currentID);
+        }
 
         if (id != currentID) {
             raf.close();
             throw new IOException("ID does not exist or was deleted.");
         }
 
-        long currentPos = raf.getFilePointer();
-        long returnPosition = currentPos - 4 - 1; // 4 from id, 1 for boolean 
-
+        long returnPosition = filePointer - 4 - 1; // 4 from id, 1 for boolean 
         raf.close();
         
         return returnPosition;
