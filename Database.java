@@ -157,6 +157,7 @@ public class Database {
                 filePointer = file.getFilePointer();
                 currentSize = (int) file.length(); // Break operation
             }else {
+                file.seek(currentSize + 4);
                 currentSize += file.readInt();
                 isValid = file.readBoolean();
                 currentId = file.readInt();
@@ -180,6 +181,7 @@ public class Database {
      * And get the file pointer value to the first byte
      * 
      * @param id must be > 0 
+     * @throws IOExecption if ID not found.
      */
     public long findEmpresaFilePointerById(int id) throws IOException {
         if (id <= 0) 
