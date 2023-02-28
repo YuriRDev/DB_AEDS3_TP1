@@ -253,12 +253,6 @@ public class Database {
             long filePointer = findEmpresaFilePointerById(id) + 5; // Pointer is on funding row
             reWriteEmpresa(filePointer, empresaFound);
         }
-
-        // se o nome da novosDados for null, nao altera o nome
-
-        // se o funding da novosDados for -1, nao altera o funding
-
-        // se a categorie da novosDados for null, nao altera a categoria
     }
 
     /*
@@ -280,6 +274,8 @@ public class Database {
             raf.writeInt(category.getBytes(Charset.forName("UTF-8")).length);
             raf.writeUTF(category);
         }
+
+        raf.close();
     }
 
 }
