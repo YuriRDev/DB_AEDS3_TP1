@@ -20,7 +20,4 @@ public class Update {
         this.categories = categories;
     }
 
-
-
-
 }

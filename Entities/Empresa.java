@@ -59,7 +59,7 @@ public class Empresa {
     public Date getCreatedAt() {
         return this.created_at;
     }
-    
+
     public String[] getCategories() {
         return this.categories;
     }
@@ -69,7 +69,7 @@ public class Empresa {
     }
 
     /** Setters */
-    public void setId(int id){
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -83,6 +83,29 @@ public class Empresa {
 
     public void setFunding(float funding) {
         this.funding = funding;
+    }
+
+    /*
+     * Merge data between updated and outdated Entity version
+     * 
+     */
+    public void MergeData(Empresa newData) {
+
+        // Change name if newData.name!=null
+        if (newData.nome != null) {
+            setNome(newData.nome);
+        }
+
+        // Change funding if newData.funding != -1
+        if (newData.funding != -1) {
+            setFunding(newData.funding);
+        }
+
+        // Change categories if not null
+        if (newData.categories != null) {
+            setCategories(newData.categories);
+        }
+
     }
 
     public void print() {
@@ -115,12 +138,12 @@ public class Empresa {
         byteData.writeInt(nome.getBytes(Charset.forName("UTF-8")).length);
         byteData.writeUTF(nome);
         byteData.writeInt(categories.length);
-        for(String category : categories) {
+        for (String category : categories) {
             byteData.writeInt(category.getBytes(Charset.forName("UTF-8")).length);
             byteData.writeUTF(category);
         }
 
-        return byteOutput.toByteArray();    
+        return byteOutput.toByteArray();
     }
 
     public void fromByteArr(byte[] byteArr) throws IOException {
@@ -142,7 +165,7 @@ public class Empresa {
         int categoriesLength = byteData.readInt();
         this.categories = new String[categoriesLength];
 
-        for(int i =0; i< categoriesLength; i++){
+        for (int i = 0; i < categoriesLength; i++) {
             // Read current lenght of this category
             byteData.readInt();
             this.categories[i] = byteData.readUTF();

@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Random;
 
 import Entities.Empresa;
 import Query.Update;
@@ -232,14 +234,52 @@ public class Database {
         raf.close();
     }
 
-    public void updateEmpresaById(int id, Empresa novosDados) throws IOException{
+    /*
+     * Update Empresa using ID
+     */
+    public void updateEmpresaById(int id, Empresa newData) throws IOException {
         Empresa empresaFound = findEmpresaByIdSequencially(id);
-    
+
+        // compare length of both entities
+        if (newData.toByteArr().length > empresaFound.toByteArr().length) {
+
+            deleteEmpresaById(id); // Delete entity on first apperance
+            empresaFound.MergeData(newData); // Change empresaFound data
+            writeEmpresaOnDb(empresaFound); // Write updated entity on EOF
+
+        } else {
+
+            empresaFound.MergeData(newData);
+            long filePointer = findEmpresaFilePointerById(id) + 5; // Pointer is on funding row
+            reWriteEmpresa(filePointer, empresaFound);
+        }
+
         // se o nome da novosDados for null, nao altera o nome
 
         // se o funding da novosDados for -1, nao altera o funding
-        
+
         // se a categorie da novosDados for null, nao altera a categoria
+    }
+
+    /*
+     * Fully rewrites entity record on file.
+     */
+    public void reWriteEmpresa(long pos, Empresa empresa) throws IOException {
+        RandomAccessFile raf = new RandomAccessFile(path, "rw");
+
+        raf.seek(pos); // Get entity position
+        raf.writeFloat(empresa.getFunding()); // Write funding
+
+        long currentPos = raf.getFilePointer() + 8; // Skip created_at
+
+        raf.seek(currentPos);
+        raf.writeInt(empresa.getNome().getBytes(Charset.forName("UTF-8")).length); // write size of Nome field
+        raf.writeUTF(empresa.getNome()); // Write name
+        raf.writeInt(empresa.getCategories().length); // Write amount of categories
+        for (String category : empresa.getCategories()) {
+            raf.writeInt(category.getBytes(Charset.forName("UTF-8")).length);
+            raf.writeUTF(category);
+        }
     }
 
 }
