@@ -16,14 +16,13 @@ class Main {
         // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         // getUserInput(myDB);
 
-        // Empresa tmp = myDB.findEmpresaByIdSequencially(559);
+
+        // Empresa tmp = myDB.findEmpresaByIdSequencially(12);
         // tmp.print();
+        // String[] updateCategories = {"abc", "def"};
+        // Empresa updatedEmpresa = new Empresa("Nomepequeno", updateCategories, 1);
 
-
-        String[] updateCategories = {"abc", "def"};
-        Empresa updatedEmpresa = new Empresa("Novo nome", updateCategories, 123);
-
-        myDB.updateEmpresaById(12, updatedEmpresa);
+        // myDB.updateEmpresaById(12, updatedEmpresa);
     }
 
     public static void getUserInput(Database database) throws IOException {

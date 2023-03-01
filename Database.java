@@ -42,6 +42,7 @@ public class Database {
 
     }
 
+
     /**
      * Search on the metadados of the DB file the current size of Entities created.
      */
@@ -58,9 +59,9 @@ public class Database {
         return currentLength;
     }
 
+
     /**
      * Read the first entity on the DB
-     * 
      */
     public Empresa readFirst() throws IOException {
         return this.readFromSeek(4);
@@ -112,6 +113,7 @@ public class Database {
         return novaEmpresa;
     }
 
+
     /**
      * Check if current ByteArray is from the empresa entity
      * 
@@ -130,10 +132,10 @@ public class Database {
         }
     }
 
+
     /**
      * Find an empresa object sequentially by it's id
      * 
-     * @param id Must be > 0
      * @throws Error if could not find it
      */
     public Empresa findEmpresaByIdSequencially(int id) throws IOException {
@@ -177,12 +179,11 @@ public class Database {
         return returnedEmpresa;
     }
 
+
     /**
      * Search an entity by it's id
      * And get the file pointer value to the first byte
      * 
-     * @param id must be > 0
-     * @throws IOExecption if ID not found.
      */
     public long findEmpresaFilePointerById(int id) throws IOException {
         if (id <= 0)
@@ -223,6 +224,10 @@ public class Database {
         return returnPosition;
     }
 
+
+    /**
+     * Finds empresa file pointer sequentially on the DB and changes the boolean valid to false
+     */
     public void deleteEmpresaById(int id) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
 
@@ -234,34 +239,33 @@ public class Database {
         raf.close();
     }
 
-    /*
-     * Update Empresa using ID
+
+    /**
+     * Update current empresa with other stats
+     * Find empresa file Pointer sequentially on the DB 
      */
     public void updateEmpresaById(int id, Empresa newData) throws IOException {
         Empresa empresaFound = findEmpresaByIdSequencially(id);
 
-        // compare length of both entities
-        if (newData.toByteArr().length > empresaFound.toByteArr().length) {
+        empresaFound.mergeData(newData); 
 
-            deleteEmpresaById(id); // Delete entity on first apperance
-            empresaFound.MergeData(newData); // Change empresaFound data
-            writeEmpresaOnDb(empresaFound); // Write updated entity on EOF
-
+        if(empresaFound.compareByteSizeWithOtherEmpresa(newData) < 0) {
+            deleteEmpresaById(id); 
+            writeEmpresaOnDb(empresaFound); 
         } else {
-
-            empresaFound.MergeData(newData);
-            long filePointer = findEmpresaFilePointerById(id) + 5; // Pointer is on funding row
-            reWriteEmpresa(filePointer, empresaFound);
+            long filePointer = findEmpresaFilePointerById(id) + 5; // Point to FUNDING row
+            reWriteEmpresaByFilePointer(filePointer, empresaFound);
         }
     }
 
+
     /*
-     * Fully rewrites entity record on file.
+     * Fully rewrites an filePointer entity record on file.
      */
-    public void reWriteEmpresa(long pos, Empresa empresa) throws IOException {
+    public void reWriteEmpresaByFilePointer(long pos, Empresa empresa) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
 
-        raf.seek(pos); // Get entity position
+        raf.seek(pos); 
         raf.writeFloat(empresa.getFunding()); // Write funding
 
         long currentPos = raf.getFilePointer() + 8; // Skip created_at

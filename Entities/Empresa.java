@@ -85,29 +85,7 @@ public class Empresa {
         this.funding = funding;
     }
 
-    /*
-     * Merge data between updated and outdated Entity version
-     * 
-     */
-    public void MergeData(Empresa newData) {
-
-        // Change name if newData.name!=null
-        if (newData.nome != null) {
-            setNome(newData.nome);
-        }
-
-        // Change funding if newData.funding != -1
-        if (newData.funding != -1) {
-            setFunding(newData.funding);
-        }
-
-        // Change categories if not null
-        if (newData.categories != null) {
-            setCategories(newData.categories);
-        }
-
-    }
-
+    /** DEBUG ONLY */
     public void print() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -127,7 +105,7 @@ public class Empresa {
         System.out.println();
     }
 
-    // // Convert attributes to byte array
+    /** Converts attributes to byteArray */
     public byte[] toByteArr() throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         DataOutputStream byteData = new DataOutputStream(byteOutput);
@@ -146,6 +124,7 @@ public class Empresa {
         return byteOutput.toByteArray();
     }
 
+    /** Converts byteArray to attribute */
     public void fromByteArr(byte[] byteArr) throws IOException {
         ByteArrayInputStream bytesInput = new ByteArrayInputStream(byteArr);
         DataInputStream byteData = new DataInputStream(bytesInput);
@@ -170,5 +149,32 @@ public class Empresa {
             byteData.readInt();
             this.categories[i] = byteData.readUTF();
         }
+    }
+
+    /** Merge data between updated and outdated Entity version */
+    public void mergeData(Empresa newData) {
+        if (newData.nome != null)
+            setNome(newData.nome);
+
+        if (newData.funding != -1)
+            setFunding(newData.funding);
+
+        if (newData.categories != null)
+            setCategories(newData.categories);
+    }
+
+    /** 
+     * Compare Byte sizes length with another empresa
+     * 
+     * @return int > 0 if this one is bigger
+     * = 0 if it's the same size
+     *  < 0 if this one is smaller
+     */
+    public int compareByteSizeWithOtherEmpresa(Empresa otherEmpresa) throws IOException {
+
+        int thisEmpresaSize = this.toByteArr().length;
+        int otherEmpresaSize = otherEmpresa.toByteArr().length;
+        
+        return thisEmpresaSize - otherEmpresaSize;
     }
 }
