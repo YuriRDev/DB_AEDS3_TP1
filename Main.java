@@ -33,15 +33,14 @@ class Main {
             Create createQuery = new Create(input.split("CREATE ")[1]);
 
             Empresa returnEmpresa = createQuery.returnEmpresaCreated();
-            System.out.println(database.getCurrentSizeOfEntities() + 1);
             returnEmpresa.setId(database.getCurrentSizeOfEntities() + 1);
 
             database.writeEmpresaOnDb(returnEmpresa);
         } else if (verb.equals("SELECT")) {
             Search searchQuery = new Search(input.split("SELECT ")[1]);
         
-            searchQuery.debugPrint();
-            database.findEmpresaBySearchQuery(searchQuery);
+            Empresa empresaFund = database.findEmpresaBySearchQuery(searchQuery);
+            empresaFund.print();
         } else {
             throw new Error(
                     "Error while parsing query. Received: " + verb + " expected CREATE, SELECT, UPDATE or REMOVE");

@@ -43,7 +43,6 @@ public class Database {
 
     }
 
-
     /**
      * Search on the metadados of the DB file the current size of Entities created.
      */
@@ -59,7 +58,6 @@ public class Database {
         file.seek(0); // Third seek to position the pointer on the first byte again.
         return currentLength;
     }
-
 
     /**
      * Read the first entity on the DB
@@ -114,7 +112,6 @@ public class Database {
         return novaEmpresa;
     }
 
-
     /**
      * Check if current ByteArray is from the empresa entity
      * 
@@ -132,7 +129,6 @@ public class Database {
             throw new Error("Error... This byte is probable not from the start of a entity");
         }
     }
-
 
     /**
      * Find an empresa object sequentially by it's id
@@ -180,7 +176,6 @@ public class Database {
         return returnedEmpresa;
     }
 
-
     /**
      * Search an entity by it's id
      * And get the file pointer value to the first byte
@@ -225,24 +220,26 @@ public class Database {
         return returnPosition;
     }
 
-
     /**
      * Find and empresa Object sequentially by it's parrams
+     * 
      * @param query The query param from the parser
      */
-    public void findEmpresaBySearchQuery(Search query) throws IOException{
+    public Empresa findEmpresaBySearchQuery(Search query) throws IOException {
 
-        for(int i =1; i < getCurrentSizeOfEntities(); i++){
+        for (int i = 1; i < getCurrentSizeOfEntities(); i++) {
             Empresa tmp = findEmpresaByIdSequencially(i);
-            if(tmp.matchWithSearchQuery(query)){
-                tmp.print();
-                return;
-            }
+            if (tmp.matchWithSearchQuery(query))
+                return tmp;
+
         }
+
+        throw new Error("Could not find the Empresa by this query");
     }
 
     /**
-     * Finds empresa file pointer sequentially on the DB and changes the boolean valid to false
+     * Finds empresa file pointer sequentially on the DB and changes the boolean
+     * valid to false
      */
     public void deleteEmpresaById(int id) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
@@ -255,25 +252,23 @@ public class Database {
         raf.close();
     }
 
-
     /**
      * Update current empresa with other stats
-     * Find empresa file Pointer sequentially on the DB 
+     * Find empresa file Pointer sequentially on the DB
      */
     public void updateEmpresaById(int id, Empresa newData) throws IOException {
         Empresa empresaFound = findEmpresaByIdSequencially(id);
 
-        empresaFound.mergeData(newData); 
+        empresaFound.mergeData(newData);
 
-        if(empresaFound.compareByteSizeWithOtherEmpresa(newData) < 0) {
-            deleteEmpresaById(id); 
-            writeEmpresaOnDb(empresaFound); 
+        if (empresaFound.compareByteSizeWithOtherEmpresa(newData) < 0) {
+            deleteEmpresaById(id);
+            writeEmpresaOnDb(empresaFound);
         } else {
             long filePointer = findEmpresaFilePointerById(id) + 5; // Point to FUNDING row
             reWriteEmpresaByFilePointer(filePointer, empresaFound);
         }
     }
-
 
     /*
      * Fully rewrites an filePointer entity record on file.
@@ -281,7 +276,7 @@ public class Database {
     public void reWriteEmpresaByFilePointer(long pos, Empresa empresa) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
 
-        raf.seek(pos); 
+        raf.seek(pos);
         raf.writeFloat(empresa.getFunding()); // Write funding
 
         long currentPos = raf.getFilePointer() + 8; // Skip created_at
