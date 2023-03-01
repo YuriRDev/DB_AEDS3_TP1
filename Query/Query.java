@@ -34,11 +34,11 @@ public class Query {
      * 
      * @param query must include >, = or <
      */
-    public void checkQueryMathSign(String query) {
+    public String checkQueryMathSign(String query) {
         /* Parse */
         for (String sign : possiblesSigns)
             if (query.contains(sign)) {
-                return;
+                return sign;
             }
 
         throw new Error(
@@ -66,30 +66,45 @@ public class Query {
         }
     }
 
-    public void checkIfAttributeExists(String text, String splitSign) {
+    public String checkIfAttributeExists(String text, String splitSign) {
         String attribute = text.split(splitSign)[0];
 
         for (String s : attributes) {
             if(attribute.equals(s)) {
-                return;
+                return s;
             }
         }
 
         throw new Error("Attribute not found. Received: " + attribute);
     }
 
+    /**
+     * Return the numeric value of the search Sign
+     * 
+     * @param searchSign must be >|=|<
+     */
+    public int getSearchSignValue(String searchSign){
+        for(int i =0; i < possiblesSigns.length; i++){
+            if(searchSign.equals(possiblesSigns[i])) return i;
+        }
 
-    public void parseInt(String queryValue) {
+        throw new Error("Could not identify the search sign!, received: " + searchSign);
+
+    }
+
+    public int parseInt(String queryValue) {
         try {
-            Integer.parseInt(queryValue);
+            int returnValue = Integer.parseInt(queryValue);
+            return returnValue;
         } catch (NumberFormatException e) {
             throw new Error("Error while parsing number, attribute  must be an integer");
         }
     }
 
-    public void parseFloat(String queryValue) {
+    public float parseFloat(String queryValue) {
         try {
-            Float.parseFloat(queryValue);
+            float returnValue = Float.parseFloat(queryValue);
+            return returnValue;
         } catch (NumberFormatException e) {
             throw new Error("Error while parsing float, attribute  must be a float");
         }

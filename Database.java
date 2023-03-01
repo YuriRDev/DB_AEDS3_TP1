@@ -3,6 +3,7 @@ import java.nio.charset.Charset;
 import java.util.Random;
 
 import Entities.Empresa;
+import Query.Search;
 import Query.Update;
 
 public class Database {
@@ -224,6 +225,21 @@ public class Database {
         return returnPosition;
     }
 
+
+    /**
+     * Find and empresa Object sequentially by it's parrams
+     * @param query The query param from the parser
+     */
+    public void findEmpresaBySearchQuery(Search query) throws IOException{
+
+        for(int i =1; i < getCurrentSizeOfEntities(); i++){
+            Empresa tmp = findEmpresaByIdSequencially(i);
+            if(tmp.matchWithSearchQuery(query)){
+                tmp.print();
+                return;
+            }
+        }
+    }
 
     /**
      * Finds empresa file pointer sequentially on the DB and changes the boolean valid to false

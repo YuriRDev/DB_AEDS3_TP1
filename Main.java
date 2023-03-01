@@ -11,7 +11,7 @@ class Main {
 
     public static void main(String[] args) throws Exception {
         Database myDB = new Database("myDb.db");
-        // System.out.println(myDB.getCurrentSizeOfEntities());
+        getUserInput(myDB);
 
         // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         // getUserInput(myDB);
@@ -39,6 +39,9 @@ class Main {
             database.writeEmpresaOnDb(returnEmpresa);
         } else if (verb.equals("SELECT")) {
             Search searchQuery = new Search(input.split("SELECT ")[1]);
+        
+            searchQuery.debugPrint();
+            database.findEmpresaBySearchQuery(searchQuery);
         } else {
             throw new Error(
                     "Error while parsing query. Received: " + verb + " expected CREATE, SELECT, UPDATE or REMOVE");

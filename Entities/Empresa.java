@@ -5,6 +5,8 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import Query.Search;
+
 public class Empresa {
     int id;
     String nome;
@@ -177,4 +179,106 @@ public class Empresa {
         
         return thisEmpresaSize - otherEmpresaSize;
     }
+
+
+
+    /**
+     * Compare with the Seach query
+     * 
+     * @return true if it's a match searh
+     * false if it's not a match 
+     */
+    public boolean matchWithSearchQuery(Search query){
+        // Comparar o id
+
+        if(query.id != -1){
+            if(!compareIDBySign(query.idSearch, query.id)) return false;
+        }
+
+        if(query.name != null){
+            if(!compareNameBySign(query.nameSearch, query.name)) return false;
+        }
+
+        if(query.categories != null){
+            if(!compareCategoryBySign(query.categorySearch, query.categories)) return false;
+        }
+
+        if(query.funding != -1){
+            if(!compareFundingBySign(query.fundingSearch, query.funding)) return false;
+        }
+
+        return true;
+    }
+
+    public boolean compareIDBySign(int sign, int compare_id) {
+        // > = < 
+
+        if(sign == 0){
+            if(id > compare_id) return true;
+        } else if (sign == 1){
+            if(id == compare_id) return true;
+        } else if (sign == 2 ){
+            if(id < compare_id) return true;
+        }
+
+        return false;
+    }
+
+    public boolean compareFundingBySign(int sign, float compare_funding) {
+        // > = < 
+
+        if(sign == 0){
+            if(this.funding > compare_funding) return true;
+        } else if (sign == 1){
+            if(funding == compare_funding) return true;
+        } else if (sign == 2 ){
+            if(funding < compare_funding) return true;
+        }
+
+        return false;
+    }
+
+
+
+    public boolean compareNameBySign(int sign, String compare_name){
+        // < = > 
+        if(sign == 0){
+            if(this.nome.compareTo(compare_name) > 0) return true;
+        } else if (sign == 1){
+            if(nome.toLowerCase().equals(compare_name.toLowerCase())) return true;
+        } else if (sign == 2){
+            if(this.nome.compareTo(compare_name) < 0) return true;
+        }
+
+        return false;
+    }
+
+
+    public boolean compareCategoryBySign(int sign, String[] compareCategory){
+        // Basicamente, ver se a quantidade de categorias eh maior ou menor ou sao as mesmas
+        
+        if(sign == 0){
+            if(categories.length > compareCategory.length) return true;
+        } else if (sign == 1){
+            for(String compareString: compareCategory){
+                boolean valid = false;
+
+                for(String currentString: this.categories){
+                    if(compareString.equals(currentString)){
+                        valid = true;
+                    }
+                }
+
+                if(valid == false) return false;
+            }
+            return true;
+        } else if (sign == 2 ){
+            if(categories.length < compareCategory.length) return true;
+        }
+
+
+        return false;
+    }
+
+
 }
