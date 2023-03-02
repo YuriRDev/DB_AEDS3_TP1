@@ -13,7 +13,7 @@ class Main {
 
     public static void main(String[] args) throws Exception {
         Database myDB = new Database("myDb.db");
-        // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+        CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         printCommands();
         getUserInput(myDB);
 

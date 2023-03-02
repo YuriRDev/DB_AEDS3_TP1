@@ -153,10 +153,10 @@ public class Database {
         int currentId = file.readInt();
 
         while (currentSize < file.length()) {
-            System.out.println(currentSize + " ... " + filePointer);
-            if (id == currentId && isValid) {
+            if (id == currentId && isValid == true) {
                 filePointer = file.getFilePointer();
                 currentSize = (int) file.length(); // Break operation
+                break;
             } else {
                 file.seek(currentSize + 4);
                 currentSize += file.readInt();
@@ -225,7 +225,7 @@ public class Database {
      * 
      * @param query The query param from the parser
      */
-    public Empresa findEmpresaBySearchQuery(Search query) throws IOException {
+    public Empresa findEmpresaBySearchQueryOLDOLD(Search query) throws IOException {
 
         for (int i = 1; i < getCurrentSizeOfEntities() + 1; i++) {
             Empresa tmp = findEmpresaByIdSequencially(i);
@@ -239,6 +239,45 @@ public class Database {
     }
 
     /**
+     * Find an empresa object sequentially by the query
+     * 
+     * @throws Error if could not find it
+     */
+    public Empresa findEmpresaBySearchQuery(Search query) throws IOException {
+        RandomAccessFile file = new RandomAccessFile(path, "r");
+
+        file.readInt();
+
+        long filePointer = 0;
+        int currentSize = file.readInt();
+        boolean isValid = file.readBoolean();
+        int currentId = file.readInt();
+
+        while (currentSize < file.length()) {
+
+            if (isValid) {
+                filePointer = file.getFilePointer();
+                Empresa returnedEmpresa = readFromSeek((filePointer - 4 - 4 - 1));
+                if (returnedEmpresa.matchWithSearchQuery(query)) {
+                    file.close();
+
+                    return returnedEmpresa;
+                }
+            }
+
+            file.seek(currentSize + 4);
+            currentSize += file.readInt();
+            isValid = file.readBoolean();
+            currentId = file.readInt();
+
+        }
+        file.close();
+        throw new Error("Could not find the Empresa by this query");
+    }
+
+    /**
+     * 
+     * /**
      * Finds empresa file pointer sequentially on the DB and changes the boolean
      * valid to false
      */
@@ -263,7 +302,7 @@ public class Database {
     public void updateEmpresaById(int id, Empresa newData) throws IOException {
         Empresa empresaNotChanged = findEmpresaByIdSequencially(id);
         Empresa empresaMerged = findEmpresaByIdSequencially(id);
-        
+
         empresaMerged.mergeData(newData);
 
         System.out.println(empresaNotChanged.toByteArr().length);
