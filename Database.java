@@ -266,9 +266,14 @@ public class Database {
             }
 
             file.seek(currentSize + 4);
-            currentSize += file.readInt();
-            isValid = file.readBoolean();
-            currentId = file.readInt();
+            try{
+                currentSize += file.readInt();
+                isValid = file.readBoolean();
+                currentId = file.readInt();
+            } catch (EOFException e) {
+                file.close();
+                throw new Error("Could not find the Empresa by this query");
+            }
 
         }
         file.close();

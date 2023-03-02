@@ -149,11 +149,53 @@ public class Query {
         }
     }
 
-
     /**
-     * Prints the structure of the CREATE query
+     * 
+     * @param s --create|-c or --select|-s or --update|-u or --delete|-d
      */
-    public void printHelpCreate() {
+    public void printQueryHelp(String s) {
+        System.out.println("\n\n\n\n");
+        if(s.equals("--create") || s.equals("-c")){
+            System.out.println("=[]= Create Query =[]=");
+            System.out.println("CREATE attribute=value AND attribute=value ... \n");
+            System.out.println("[] Attributes: ");
+            System.out.println("* funding = Float");
+            System.out.println("* nome = String");
+            System.out.println("* categories = String[] - Separated by && \n");
+            System.out.println("[] Example:");
+            System.out.println("CREATE nome=Nome Da Empresa AND categories=jogos&&seguranca AND funding=1500000");
+        } else if (s.equals("--update") || s.equals("-u")){
+            System.out.println("=[]= Update Query =[]=");
+            System.out.println("!Nullable attributes will not change the current value of the entity\n");
+            System.out.println("UPDATE id(integer) attribute=value AND attribute=value ... \n");
+            System.out.println("[] Attributes: ");
+            System.out.println("funding = Float");
+            System.out.println("nome = String");
+            System.out.println("categories = String[] - Separated by && \n");
+            System.out.println("[] Example:");
+            System.out.println("UPDATE 23 nome=Novo Nome AND funding=800000");
+        } else if (s.equals("--select") || s.equals("-s")){
+            System.out.println("=[]= Select Query =[]=");
+            System.out.println("SELECT (n>0 | *) attribute=value AND attribute=value ... \n");
+            System.out.println("[] Attributes: ");
+            System.out.println("id = integer");
+            System.out.println("funding = Float");
+            System.out.println("nome = String");
+            System.out.println("categories = String[] - Separated by && \n");
+            System.out.println("[] Possible Signs");
+            System.out.println("> | = | < \n");
+            System.out.println("[] Example:");
+            System.out.println("SELECT 3 funding>400 AND id>120");
+        } else if (s.equals("--delete") || s.equals("-d")){
+            System.out.println("=[]= Delete Query =[]=");
+            System.out.println("DELETE id \n");
+            System.out.println("[] Attributes: ");
+            System.out.println("*id = integer > 0\n");
+            System.out.println("[] Example:");
+            System.out.println("DELETE 32");
+        }
+
+        System.out.println("\n\n\n");
 
     }
 }

@@ -5,6 +5,7 @@ import java.util.Scanner;
 import Entities.Empresa;
 import Query.Create;
 import Query.Delete;
+import Query.Query;
 import Query.Update;
 import Query.Search;
 
@@ -13,11 +14,11 @@ class Main {
 
     public static void main(String[] args) throws Exception {
         Database myDB = new Database("myDb.db");
-        CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+        // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         printCommands();
-        getUserInput(myDB);
 
-        getUserInput(myDB);
+        while (true)
+            getUserInput(myDB);
 
         // Empresa tmp = myDB.findEmpresaByIdSequencially(12);
         // tmp.print();
@@ -59,10 +60,19 @@ class Main {
 
                 break;
             }
-            case "DELETE":{
+            case "DELETE": {
                 Delete deleteQuery = new Delete(input.split("DELETE ")[1]);
                 database.deleteEmpresaById(deleteQuery.getId());
                 break;
+            }
+            case "help": {
+                if(input.equals("help")){
+                    printCommands();
+                    return;
+                };
+                Query helpQuery = new Query();
+                helpQuery.printQueryHelp(input.split("help ")[1]);
+                return;
             }
             default: {
                 throw new Error(
@@ -89,6 +99,8 @@ class Main {
         System.out.println();
         System.out.println("[] Overall commands");
         System.out.println("    listall");
+
+        System.out.println("\n\n");
     }
 
     /**
