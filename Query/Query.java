@@ -46,6 +46,17 @@ public class Query {
     }
 
     /**
+     * Search for the equal sign on the creation
+     * 
+     * @param text <i>attribute</i> <b>=</b> value
+     */
+    public void checkAttributeEqualSign(String text) {
+        if (!text.contains("=")) {
+            throw new Error("Error while creating entity. (" + text + ") must include the equal sign while creating");
+        }
+    }
+
+    /**
      * Return the numeric value of * or n>0
      * 
      * @param text n>0 or *
@@ -66,6 +77,12 @@ public class Query {
         }
     }
 
+    /**
+     * Check if attribute exist
+     * 
+     * @param attribute one of: "id", "nome", "categories", "funding", "created_at", "updated_at"
+     */
+
     public String checkIfAttributeExists(String text, String splitSign) {
         String attribute = text.split(splitSign)[0];
 
@@ -76,6 +93,19 @@ public class Query {
         }
 
         throw new Error("Attribute not found. Received: " + attribute);
+    }
+
+    /**
+     * Check if attribute exists for the creating/update query
+     * 
+     * @param attribute nome|categories or funding
+     */
+    public String checkIfAttributeExistsForCreation(String attribute) {
+        for (String att : creatingAttributes) {
+            if (att.equals(attribute))
+                return attribute;
+        }
+        throw new Error("Error while reading (" + attribute + ") does not exist. Must be nome,categories or funding");
     }
 
     /**
@@ -117,5 +147,13 @@ public class Query {
             throw new Error(
                     "Error while parsing Date, attribute  must be a Date type dd-mm-yyyy");
         }
+    }
+
+
+    /**
+     * Prints the structure of the CREATE query
+     */
+    public void printHelpCreate() {
+
     }
 }

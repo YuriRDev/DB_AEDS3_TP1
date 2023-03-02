@@ -24,29 +24,6 @@ public class Create extends Query {
         }
     }
 
-    /**
-     * Search for the equal sign on the creation
-     * 
-     * @param text <i>attribute</i> <b>=</b> value
-     */
-    public void checkAttributeEqualSign(String text) {
-        if (!text.contains("=")) {
-            throw new Error("Error while creating entity. (" + text + ") must include the equal sign while creating");
-        }
-    }
-
-    /**
-     * Check if attribute exists
-     * 
-     * @param attribute nome|categories or funding
-     */
-    public void checkIfAttributeExistsForCreation(String attribute) {
-        for (String att : creatingAttributes) {
-            if (att.equals(attribute))
-                return;
-        }
-        throw new Error("Error while reading (" + attribute + ") does not exist. Must be nome,categories or funding");
-    }
 
     /**
      * Set the value of the attribute to the class

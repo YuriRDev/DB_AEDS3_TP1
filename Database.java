@@ -153,7 +153,7 @@ public class Database {
         int currentId = file.readInt();
 
         while (currentSize < file.length()) {
-
+            System.out.println(currentSize + " ... " + filePointer);
             if (id == currentId && isValid) {
                 filePointer = file.getFilePointer();
                 currentSize = (int) file.length(); // Break operation
@@ -227,8 +227,9 @@ public class Database {
      */
     public Empresa findEmpresaBySearchQuery(Search query) throws IOException {
 
-        for (int i = 1; i < getCurrentSizeOfEntities(); i++) {
+        for (int i = 1; i < getCurrentSizeOfEntities() + 1; i++) {
             Empresa tmp = findEmpresaByIdSequencially(i);
+            System.out.println(tmp.getId());
             if (tmp.matchWithSearchQuery(query))
                 return tmp;
 
@@ -247,6 +248,9 @@ public class Database {
         long pos = findEmpresaFilePointerById(id);
 
         raf.seek(pos);
+        this.checkIfByteArrayIsFromEmpresa(raf);
+
+        raf.seek(pos);
         raf.writeBoolean(false);
 
         raf.close();
@@ -257,16 +261,19 @@ public class Database {
      * Find empresa file Pointer sequentially on the DB
      */
     public void updateEmpresaById(int id, Empresa newData) throws IOException {
-        Empresa empresaFound = findEmpresaByIdSequencially(id);
+        Empresa empresaNotChanged = findEmpresaByIdSequencially(id);
+        Empresa empresaMerged = findEmpresaByIdSequencially(id);
+        
+        empresaMerged.mergeData(newData);
 
-        empresaFound.mergeData(newData);
-
-        if (empresaFound.compareByteSizeWithOtherEmpresa(newData) < 0) {
+        System.out.println(empresaNotChanged.toByteArr().length);
+        System.out.println(empresaMerged.toByteArr().length);
+        if (empresaNotChanged.compareByteSizeWithOtherEmpresa(empresaMerged) < 0) {
             deleteEmpresaById(id);
-            writeEmpresaOnDb(empresaFound);
+            writeEmpresaOnDb(empresaMerged);
         } else {
             long filePointer = findEmpresaFilePointerById(id) + 5; // Point to FUNDING row
-            reWriteEmpresaByFilePointer(filePointer, empresaFound);
+            reWriteEmpresaByFilePointer(filePointer, empresaMerged);
         }
     }
 

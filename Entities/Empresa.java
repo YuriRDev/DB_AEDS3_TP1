@@ -22,7 +22,7 @@ public class Empresa {
     }
 
     public Empresa(String nome, String[] categories, float funding) {
-        this.id = id;
+        this.id = -1;
         this.nome = nome;
         this.categories = categories;
         this.funding = funding;
