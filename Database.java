@@ -266,7 +266,7 @@ public class Database {
             }
 
             file.seek(currentSize + 4);
-            try{
+            try {
                 currentSize += file.readInt();
                 isValid = file.readBoolean();
                 currentId = file.readInt();
@@ -278,6 +278,53 @@ public class Database {
         }
         file.close();
         throw new Error("Could not find the Empresa by this query");
+    }
+
+    /**
+     * Print an list of empresas found by query
+     * 
+     * @param query    Query object
+     * @param quantity > 1
+     * @throws Error if could not find it
+     */
+    public void printManyEmpresaBySearchQuery(Search query, int quantity) throws IOException {
+        RandomAccessFile file = new RandomAccessFile(path, "r");
+
+        file.readInt();
+
+        long filePointer = 0;
+        int currentSize = file.readInt();
+        boolean isValid = file.readBoolean();
+        int currentId = file.readInt();
+
+        int cnt = 0;
+
+        try {
+
+            while (currentSize < file.length()) {
+
+                if (isValid) {
+                    filePointer = file.getFilePointer();
+                    Empresa returnedEmpresa = readFromSeek((filePointer - 4 - 4 - 1));
+                    if (returnedEmpresa.matchWithSearchQuery(query)) {
+                        if (cnt++ >= quantity) {
+                            return;
+                        }
+                        returnedEmpresa.print();
+                    }
+                }
+
+                file.seek(currentSize + 4);
+                currentSize += file.readInt();
+                isValid = file.readBoolean();
+                currentId = file.readInt();
+
+            }
+        } catch (EOFException e) {
+            file.close();
+
+        }
+
     }
 
     /**

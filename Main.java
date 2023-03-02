@@ -20,12 +20,6 @@ class Main {
         while (true)
             getUserInput(myDB);
 
-        // Empresa tmp = myDB.findEmpresaByIdSequencially(12);
-        // tmp.print();
-        // String[] updateCategories = {"abc", "def"};
-        // Empresa updatedEmpresa = new Empresa("Nomepequeno", updateCategories, 1);
-
-        // myDB.updateEmpresaById(12, updatedEmpresa);
     }
 
     public static void getUserInput(Database database) throws IOException {
@@ -33,6 +27,8 @@ class Main {
         String verb = input.split(" ")[0];
 
         long queryStarted = System.currentTimeMillis();
+
+        /** Verb Handler */
         switch (verb) {
             case "CREATE": {
                 Create createQuery = new Create(input.split("CREATE ")[1]);
@@ -47,8 +43,14 @@ class Main {
             case "SELECT": {
                 Search searchQuery = new Search(input.split("SELECT ")[1]);
 
-                Empresa empresaFund = database.findEmpresaBySearchQuery(searchQuery);
-                empresaFund.print();
+                if (searchQuery.quantityToSelect == 1) {
+                    Empresa empresaFund = database.findEmpresaBySearchQuery(searchQuery);
+                    empresaFund.print();
+                } else {
+                    System.out.println("[] Display as:");
+                    System.out.println("Id | Nome | Funding | Categories | Created_At");
+                    database.printManyEmpresaBySearchQuery(searchQuery, searchQuery.quantityToSelect);
+                }
                 break;
             }
             case "UPDATE": {
@@ -66,10 +68,11 @@ class Main {
                 break;
             }
             case "help": {
-                if(input.equals("help")){
+                if (input.equals("help")) {
                     printCommands();
                     return;
-                };
+                }
+
                 Query helpQuery = new Query();
                 helpQuery.printQueryHelp(input.split("help ")[1]);
                 return;
@@ -82,7 +85,7 @@ class Main {
 
         long queryFinished = System.currentTimeMillis();
         long timeElapsed = queryFinished - queryStarted;
-        System.out.println("Time elapsed: " + timeElapsed + "ms");
+        System.out.println("Time elapsed: " + timeElapsed + "ms \n\n");
     }
 
     /**
@@ -96,9 +99,9 @@ class Main {
         System.out.println("    help --update|-u");
         System.out.println("    help --delete|-d");
 
-        System.out.println();
-        System.out.println("[] Overall commands");
-        System.out.println("    listall");
+        // System.out.println();
+        // System.out.println("[] Overall commands");
+        // System.out.println(" listall");
 
         System.out.println("\n\n");
     }

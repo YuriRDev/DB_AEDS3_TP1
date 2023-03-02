@@ -63,7 +63,7 @@ public class Query {
      */
     public int getQuantitySelected(String text) {
         if (text.equals("*"))
-            return -1;
+            return 100000;
 
         try {
             int numericValue = Integer.parseInt(text);
