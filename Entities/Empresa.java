@@ -87,6 +87,10 @@ public class Empresa {
         this.funding = funding;
     }
 
+    public void setCreated_At(long date) {
+        this.created_at = new Date(date);
+    }
+
     /** DEBUG ONLY */
     public void print() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
