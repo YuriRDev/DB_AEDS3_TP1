@@ -77,6 +77,13 @@ class Main {
                 helpQuery.printQueryHelp(input.split("help ")[1]);
                 return;
             }
+            case "easteregg": {
+                System.out.println("sk fun?");
+                System.out.println("Yes! Fun!");
+                System.out.println("Like magic3?");
+                System.out.println("More like ...Y3211");
+                return;
+            }
             default: {
                 throw new Error(
                         "Error while parsing query. Received: " + verb + " expected CREATE, SELECT, UPDATE or REMOVE");
