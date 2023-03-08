@@ -344,6 +344,10 @@ public class Database {
         raf.seek(pos);
         raf.writeBoolean(false);
 
+        //Remove 1 from total records
+        raf.seek(0); //Go to initial position
+        raf.writeInt(getCurrentSizeOfEntities() - 1);        
+
         raf.close();
     }
 

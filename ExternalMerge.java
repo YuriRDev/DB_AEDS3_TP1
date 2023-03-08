@@ -1,24 +1,27 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.Math;
 
 import Entities.Empresa;
 
 // AKA Intercalação Balanceada
 public class ExternalMerge extends Database {
-    int n; // Amount of records
-    int m; // Amount of paths
-    String path; // RandomAccessFile path
+    int recordAmount; // Current amount of records in our file.
+    int blockSize; // Amount of block of registers.
+    int pathAmount; // Amount of paths.
+    String path; // RandomAccessFile path.
     RandomAccessFile file;
-    RandomAccessFile temp[]; // Temporary files
+    RandomAccessFile temp[]; // Temporary files.
 
     /* Constructors */
-    public ExternalMerge(int n, int m, String path) throws IOException {
-        this.n = n;
-        this.m = m;
+    public ExternalMerge(int blockSize, int pathAmount, String path) throws IOException {
+        this.blockSize = blockSize;
+        this.pathAmount = pathAmount;
         this.path = path;
         file = new RandomAccessFile(path, "rw");
-        temp = new RandomAccessFile[m*2];
+        this.recordAmount = file.readInt(); 
+        temp = new RandomAccessFile[pathAmount*2];
         for(int i = 0; i < temp.length; i++) {
             temp[i] = new RandomAccessFile("tmpFile"+i, "rw");
         }
@@ -29,9 +32,9 @@ public class ExternalMerge extends Database {
         file.seek(4); // Skip header to ease readability
         int currentFile = 0;
         while (!eof()) {
-            if(currentFile == m) {currentFile = 0;}
+            if(currentFile == pathAmount) {currentFile = 0;}
 
-            Empresa[] records = new Empresa[m*2]; // Create block of size 4, will be sorted on main memory
+            Empresa[] records = new Empresa[pathAmount*2]; // Create block of size 4, will be sorted on main memory
 
             for(int i = 0; i < records.length; i++){
                 records[i] = deserializeEmpresa(); // Assigns entity to array position
@@ -43,21 +46,19 @@ public class ExternalMerge extends Database {
             
             currentFile++;
         }
-
-        int recordAmount = this.n; // Initialize record amount as this.n
-
-        /* Don't want to make intercalate() as a recursive function, maybe a 
-         * loop at the end of preLoad()??? 
-         * 
-         * Any ideas??
-         */
-
     }
 
     /* Intercalate between tempFiles
-     * @param recordAmount = amount of records that will be merged (increases by *n at each call)
+     * @param blockSize = amount of records that will be merged (increases by *n at each call)
      */
-    public void intercalate(int recordAmount) throws IOException {
+    public void intercalate() throws IOException {
+
+        /*  We calculate how many times we'll pass through the loop by writing a simple expression
+        *   we do log at base (@param pathAmount) of N(@param total record amount)/b(@param sizeOf sorted records in memory)
+        */
+        int passings = (int)(1 + ((Math.log(recordAmount/recordAmount))/Math.log(pathAmount)));
+
+        
         /*  Escrever de arquivos 1 e 2 para 3 e 4, e vice-versa, 
         *   limpando os arquivos que receberao os dados ordenados a cada passada.
         *   
