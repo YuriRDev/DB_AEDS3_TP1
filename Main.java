@@ -82,10 +82,10 @@ class Main {
                 return;
             }
             case "easteregg": {
-                System.out.println("sk fun?");
+                System.out.println("skate for fun?");
                 System.out.println("Yes! Fun!");
-                System.out.println("Like magic3?");
-                System.out.println("More like ...Y3211");
+                System.out.println("Like magic number three?");
+                System.out.println("More like ...3211");
                 return;
             }
             default: {
