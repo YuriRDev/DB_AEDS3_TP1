@@ -7,6 +7,7 @@ import Query.Create;
 import Query.Delete;
 import Query.Query;
 import Query.Update;
+import Sort.Intercalacao;
 import Query.Search;
 
 class Main {
@@ -15,6 +16,9 @@ class Main {
     public static void main(String[] args) throws Exception {
         Database myDB = new Database("myDb.db");
         // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+        Intercalacao balanceada = new Intercalacao();
+        balanceada.loadTempFile();
+
         printCommands();
 
         while (true)

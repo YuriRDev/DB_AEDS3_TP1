@@ -91,6 +91,7 @@ public class ExternalMerge extends Database {
             file.readInt(); // Skip String length
             categories[i] = file.readUTF();
         }
+        curr.setCategories(categories);
 
         return curr;
     }
