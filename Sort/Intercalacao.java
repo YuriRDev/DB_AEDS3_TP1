@@ -208,26 +208,114 @@ public class Intercalacao {
         // Reset pointers
         pointAllFPToStart();
 
-        Empresa empresaFileOne = deserializeEmpresa(tempFiles[0]);
-        Empresa empresaFileTwo = deserializeEmpresa(tempFiles[1]);
+        int firstCount = 1;
+        int seccondCount = 1;
+
+        Empresa empresaUm = deserializeEmpresa(tempFiles[0]);
+        Empresa empresaDois = deserializeEmpresa(tempFiles[1]);
+
         do {
-            long firstFilePos = 0;
-            long secondFilePos = 0;
+            while (firstCount < blocos || seccondCount < blocos) {
 
-            /** Comparar de 3 em 3 */
-            while (firstFilePos < blocos || secondFilePos < blocos) {
+                if (firstCount >= blocos) {
 
-                    
+                    // Bom... Vamos pegar o valor da empresa Dois e escrever
+                    System.out.println(empresaDois.getId());
+
+                    seccondCount++;
+                    Empresa oldTmp = empresaDois;
+                    try {
+                        empresaDois = deserializeEmpresa(tempFiles[1]);
+                    } catch (EOFException e) {
+                        System.out.println(oldTmp.getId());
+                        System.out.println("Opa, deu EOF na empresa DOIS...");
+                        seccondCount += 10;
+                        continue;
+
+                    }
+                }
+
+                if (seccondCount >= blocos) {
+                    // Bom... Vamos pegar o valor da empresa Dois e escrever
+                    System.out.println(empresaDois.getId());
+
+                    firstCount++;
+                    Empresa oldTmp = empresaUm;
+                    try {
+                        empresaUm = deserializeEmpresa(tempFiles[0]);
+                    } catch (EOFException e) {
+                        System.out.println(oldTmp.getId());
+                        System.out.println("Opa, deu EOF na empresa UM...");
+                        firstCount += 10;
+                        continue;
+
+                    }
+                }
+            
+                /** Comparar pra ver qual é maior ou menor */
+                if(empresaUm.getId() < empresaDois.getId()){
+                    System.out.println(empresaUm.getId());
+
+                    Empresa oldTmp = empresaUm;
+                    firstCount++;
+                    try {
+                        empresaUm = deserializeEmpresa(tempFiles[0]);
+                    } catch (EOFException e){
+                        System.out.println(oldTmp.getId());
+                        System.out.println("Deu EOF na empresa UM.... comparando");
+                        firstCount+=10;
+                        continue;
+                    }
+                }
+            
+                /** Comparar pra ver qual é maior ou menor */
+                if(empresaUm.getId() > empresaDois.getId()){
+                    System.out.println(empresaDois.getId());
+
+                    Empresa oldTmp = empresaDois;
+                    seccondCount++;
+                    try {
+                        empresaDois = deserializeEmpresa(tempFiles[1]);
+                    } catch (EOFException e){
+                        System.out.println(oldTmp.getId());
+                        System.out.println("Deu EOF na empresa DOIS.... comparando");
+                        seccondCount+=10;
+
+                    }
+                }
+            
+                
             }
 
-            /** Resetar */
-            firstFilePos = 0;
-            secondFilePos = 0;
+            firstCount = 0;
+            seccondCount = 0;
 
         } while (!eof(tempFiles[0]) || !eof(tempFiles[1]));
 
         System.out.println("Acabou eof");
+    }
 
+    public void printIntercaleTmp() throws IOException {
+        // Reset pointers
+        pointAllFPToStart();
+
+        int i = 0;
+        do {
+
+            Empresa tmp;
+            tmp = deserializeEmpresa(tempFiles[0]);
+            System.out.println("[0] - " + tmp.getId() + " - " + tmp.getNome());
+            i++;
+        } while (!eof(tempFiles[0]));
+
+        do {
+            Empresa tmp;
+            tmp = deserializeEmpresa(tempFiles[1]);
+            System.out.println("[1] - " + tmp.getId() + " - " + tmp.getNome());
+            i++;
+        } while (!eof(tempFiles[1]));
+
+        System.out.println("Acabou eof");
     }
 
     /**
