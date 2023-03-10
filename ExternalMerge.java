@@ -9,15 +9,14 @@ import Entities.Empresa;
 public class ExternalMerge extends Database {
     int recordAmount; // Current amount of records in our file.
     int blockSize; // Amount of block of registers.
-    int pathAmount; // Amount of paths.
+    int pathAmount = 2; // Amount of paths, I left it static.
     String path; // RandomAccessFile path.
     RandomAccessFile file;
     RandomAccessFile temp[]; // Temporary files.
 
     /* Constructors */
-    public ExternalMerge(int blockSize, int pathAmount, String path) throws IOException {
+    public ExternalMerge(int blockSize,String path) throws IOException {
         this.blockSize = blockSize;
-        this.pathAmount = pathAmount;
         this.path = path;
         file = new RandomAccessFile(path, "rw");
         this.recordAmount = file.readInt(); 
@@ -34,10 +33,10 @@ public class ExternalMerge extends Database {
         while (!eof()) {
             if(currentFile == pathAmount) {currentFile = 0;}
 
-            Empresa[] records = new Empresa[pathAmount*2]; // Create block of size 4, will be sorted on main memory
+            Empresa[] records = new Empresa[blockSize]; // Create block of size 4, will be sorted on main memory
 
             for(int i = 0; i < records.length; i++){
-                records[i] = deserializeEmpresa(); // Assigns entity to array position
+                records[i] = deserializeEmpresa(file); // Assigns entity to array position
             }
              
            sort(records); // Sort entities by ID
@@ -51,28 +50,59 @@ public class ExternalMerge extends Database {
     /* Intercalate between tempFiles
      * @param blockSize = amount of records that will be merged (increases by *n at each call)
      */
-    public void intercalate() throws IOException {
-
+    private void intercalate() throws IOException {
+        
         /*  We calculate how many times we'll pass through the loop by writing a simple expression
         *   we do log at base (@param pathAmount) of N(@param total record amount)/b(@param sizeOf sorted records in memory)
         */
-        int passings = (int)(1 + ((Math.log(recordAmount/recordAmount))/Math.log(pathAmount)));
+        int passings = (int)(Math.ceil((Math.log10(recordAmount/blockSize))/Math.log10(pathAmount)));
+        boolean phase = true; // On false, write on second file pair. On true, on first file pair.
+        int segmentSize = blockSize;
 
-        
-        /*  Escrever de arquivos 1 e 2 para 3 e 4, e vice-versa, 
-        *   limpando os arquivos que receberao os dados ordenados a cada passada.
-        *   
-        *   Existe .clear() pra RandomAccessFile?? Como limpar os arquivos??
-        */ 
+        for(int i = 0; i < passings; i++) {  // Run the amount
+            if(!phase) { // 1 e 2 p/ 3 e 4
+                int count3 = 0, count4 = 0, counter = 0;
+                int curr = 0;
+                Empresa[] a1 = new Empresa[segmentSize];
+                Empresa[] a2 = new Empresa[segmentSize];
+                while(temp[0].getFilePointer() < temp[0].length() && temp[1].getFilePointer() < temp[1].length()) {
+                        if(curr >=2) {curr = 0;} // reset curr
 
-        
+                        for(int j=0; j < segmentSize*2; j++) {
+                            a1[counter] = deserializeEmpresa(temp[0]);
+                            a2[counter++] = deserializeEmpresa(temp[1]);
+                        }
+                        //Merge and write in order to new File
+                        for(int k = 0; k < segmentSize*4; k++) {
+                            if(curr == 0) {
+                                if(a1[count3].getId() < a2[count4].getId()) {
+                                    temp[2].write(a1[count3++].toByteArr());
+                                }else{temp[2].write(a2[count4++].toByteArr());}
+                            }else {
+                                if(a1[count3].getId() < a2[count4].getId()) {
+                                    temp[3].write(a1[count3++].toByteArr());
+                                }else{temp[3].write(a2[count4++].toByteArr());}
+                            }
+                        }
+                        count3 = 0;
+                        count4 = 0;                    
+                }
 
+
+
+            }
+            else if(phase) {
+
+            }
+
+
+        }
 
     }
 
 
     /* Search and returns entity */
-    private Empresa deserializeEmpresa()  throws IOException {
+    private Empresa deserializeEmpresa(RandomAccessFile file)  throws IOException {
         Empresa curr = new Empresa();
 
         /* Skip data... */
