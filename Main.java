@@ -17,7 +17,9 @@ class Main {
         Database myDB = new Database("myDb.db");
         // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
         Intercalacao balanceada = new Intercalacao();
-        balanceada.loadTempFile();
+        // balanceada.loadTempFile();
+        balanceada.firstIntercalate();
+
 
         printCommands();
 
