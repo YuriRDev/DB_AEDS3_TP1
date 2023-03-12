@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.Date;
+import java.util.Random;
 import java.util.Scanner;
 
 import Entities.Empresa;
@@ -15,11 +16,13 @@ class Main {
 
     public static void main(String[] args) throws Exception {
         Database myDB = new Database("myDb.db");
-        // CsvImport myCSV = new CsvImport("./dataset.csv", myDB);
+
         Intercalacao balanceada = new Intercalacao();
+        // Printing the content of the file.
         balanceada.loadTempFile();
+        balanceada.intercalate();
+        balanceada.intercalateByParam(2, 6);
         // balanceada.printIntercaleTmp();
-        balanceada.firstIntercalate();
 
 
         printCommands();
@@ -72,6 +75,16 @@ class Main {
             case "DELETE": {
                 Delete deleteQuery = new Delete(input.split("DELETE ")[1]);
                 database.deleteEmpresaById(deleteQuery.getId());
+                break;
+            }
+            case "RAF": {
+                System.out.println("Selecionado uma empresa aleatoria...");
+                Random rand = new Random();
+                int number = rand.nextInt(10, 200);
+                Empresa found = database.findEmpresaByIdSequencially(number);
+
+                found.print();
+
                 break;
             }
             case "help": {

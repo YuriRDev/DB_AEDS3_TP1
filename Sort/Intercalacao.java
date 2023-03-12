@@ -204,95 +204,203 @@ public class Intercalacao {
     /**
      * DEBUG!!!!
      */
-    public void firstIntercalate() throws IOException {
-        // Reset pointers
+    public boolean intercalateByParam(int firstTmp, int blockMult) throws IOException {
         pointAllFPToStart();
 
-        int firstCount = 1;
-        int seccondCount = 1;
-
-        Empresa empresaUm = deserializeEmpresa(tempFiles[0]);
-        Empresa empresaDois = deserializeEmpresa(tempFiles[1]);
+        int firstCount = 0;
+        int seccondCount = 0;
+        Empresa empresaUm = null;
+        Empresa empresaDois = null;
+        boolean done = false;
+        boolean lastIntercalate = false;
 
         do {
-            while (firstCount < blocos || seccondCount < blocos) {
+            while (firstCount < blocos * blockMult || seccondCount < blocos * blockMult) {
 
-                if (firstCount >= blocos) {
-
-                    // Bom... Vamos pegar o valor da empresa Dois e escrever
-                    System.out.println(empresaDois.getId());
-
-                    seccondCount++;
-                    Empresa oldTmp = empresaDois;
+                /** Verificar se um deles ja acabou */
+                if (firstCount == blocos * blockMult) {
+                    // escrever empresa dois
                     try {
-                        empresaDois = deserializeEmpresa(tempFiles[1]);
+                        empresaDois = deserializeEmpresa(tempFiles[firstTmp + 1]);
+                        System.out.println("[1-" + seccondCount + "]" + empresaDois.getId());
                     } catch (EOFException e) {
-                        System.out.println(oldTmp.getId());
-                        System.out.println("Opa, deu EOF na empresa DOIS...");
                         seccondCount += 10;
-                        continue;
-
                     }
-                }
-
-                if (seccondCount >= blocos) {
-                    // Bom... Vamos pegar o valor da empresa Dois e escrever
-                    System.out.println(empresaDois.getId());
-
-                    firstCount++;
-                    Empresa oldTmp = empresaUm;
-                    try {
-                        empresaUm = deserializeEmpresa(tempFiles[0]);
-                    } catch (EOFException e) {
-                        System.out.println(oldTmp.getId());
-                        System.out.println("Opa, deu EOF na empresa UM...");
-                        firstCount += 10;
-                        continue;
-
-                    }
-                }
-            
-                /** Comparar pra ver qual é maior ou menor */
-                if(empresaUm.getId() < empresaDois.getId()){
-                    System.out.println(empresaUm.getId());
-
-                    Empresa oldTmp = empresaUm;
-                    firstCount++;
-                    try {
-                        empresaUm = deserializeEmpresa(tempFiles[0]);
-                    } catch (EOFException e){
-                        System.out.println(oldTmp.getId());
-                        System.out.println("Deu EOF na empresa UM.... comparando");
-                        firstCount+=10;
-                        continue;
-                    }
-                }
-            
-                /** Comparar pra ver qual é maior ou menor */
-                if(empresaUm.getId() > empresaDois.getId()){
-                    System.out.println(empresaDois.getId());
-
-                    Empresa oldTmp = empresaDois;
                     seccondCount++;
+                    continue;
+                } else if (seccondCount == blocos * blockMult) {
                     try {
-                        empresaDois = deserializeEmpresa(tempFiles[1]);
-                    } catch (EOFException e){
-                        System.out.println(oldTmp.getId());
-                        System.out.println("Deu EOF na empresa DOIS.... comparando");
-                        seccondCount+=10;
-
+                        empresaUm = deserializeEmpresa(tempFiles[firstTmp]);
+                        System.out.println("[0-" + firstCount + "]" + empresaUm.getId());
+                    } catch (EOFException e) {
+                        firstCount += 10;
                     }
+                    firstCount++;
+                    continue;
                 }
-            
-                
+
+                // Bom... Vamos pegar o valor da empresa Dois e escrever
+                if (empresaDois == null) {
+                    try {
+                        empresaDois = deserializeEmpresa(tempFiles[firstTmp + 1]);
+                    } catch (EOFException e) {
+                        seccondCount += 10;
+                    }
+                    lastIntercalate = false;
+
+                    seccondCount++;
+                }
+                if (empresaUm == null) {
+                    try {
+                        empresaUm = deserializeEmpresa(tempFiles[firstTmp]);
+                    } catch (EOFException e) {
+                        firstCount += 10;
+                    }
+                    lastIntercalate = false;
+
+                    firstCount++;
+                }
+
+                if (empresaUm.getId() < empresaDois.getId() && firstCount < blocos * blockMult) {
+                    try {
+                        System.out.println("[0-" + firstCount + "]" + empresaUm.getId());
+                        empresaUm = deserializeEmpresa(tempFiles[firstTmp]);
+                    } catch (EOFException e) {
+                        firstCount += 10;
+                    }
+                    lastIntercalate = false;
+
+                    firstCount++;
+                }
+
+                if (empresaDois.getId() < empresaUm.getId() && seccondCount < blocos * blockMult) {
+                    try {
+                        System.out.println("[1-" + seccondCount + "]" + empresaDois.getId());
+                        empresaDois = deserializeEmpresa(tempFiles[firstTmp + 1]);
+                    } catch (EOFException e) {
+                        seccondCount += 10;
+                    }
+                    seccondCount++;
+                }
+
+                /** Check if we can return */
+                try {
+                    deserializeEmpresa(tempFiles[0]);
+                    deserializeEmpresa(tempFiles[1]);
+                    lastIntercalate = false;
+                } catch (EOFException e) {
+                    done = true;
+                }
+                if (seccondCount == blocos * blockMult && firstCount == blocos * blockMult)
+                    break;
+
             }
 
             firstCount = 0;
             seccondCount = 0;
+            if (done)
+                break;
+        } while (!(eof(tempFiles[0]) && eof(tempFiles[1])));
+    
+        return lastIntercalate;
+    }
 
-        } while (!eof(tempFiles[0]) || !eof(tempFiles[1]));
+    public void intercalate() throws IOException {
+        // Reset pointers
+        pointAllFPToStart();
 
-        System.out.println("Acabou eof");
+        int firstCount = 0;
+        int seccondCount = 0;
+        Empresa empresaUm = null;
+        Empresa empresaDois = null;
+        boolean done = false;
+
+        do {
+            while (firstCount < blocos || seccondCount < blocos) {
+
+                /** Verificar se um deles ja acabou */
+                if (firstCount == blocos) {
+                    // escrever empresa dois
+                    try {
+                        empresaDois = deserializeEmpresa(tempFiles[1]);
+                        System.out.println("[1-" + seccondCount + "]" + empresaDois.getId());
+                        appendEmpresaOnByte(tempFiles[3], empresaDois);
+                    } catch (EOFException e) {
+                        seccondCount += 10;
+                    }
+                    seccondCount++;
+                    continue;
+                } else if (seccondCount == blocos) {
+                    try {
+                        empresaUm = deserializeEmpresa(tempFiles[0]);
+                        System.out.println("[0-" + firstCount + "]" + empresaUm.getId());
+                        appendEmpresaOnByte(tempFiles[2], empresaUm);
+
+                    } catch (EOFException e) {
+                        firstCount += 10;
+                    }
+                    firstCount++;
+                    continue;
+                }
+
+                // Bom... Vamos pegar o valor da empresa Dois e escrever
+                if (empresaDois == null) {
+                    try {
+                        empresaDois = deserializeEmpresa(tempFiles[1]);
+                    } catch (EOFException e) {
+                        seccondCount += 10;
+                    }
+                    seccondCount++;
+                }
+                if (empresaUm == null) {
+                    try {
+                        empresaUm = deserializeEmpresa(tempFiles[0]);
+                    } catch (EOFException e) {
+                        firstCount += 10;
+                    }
+                    firstCount++;
+                }
+
+                if (empresaUm.getId() < empresaDois.getId() && firstCount < blocos) {
+                    try {
+                        System.out.println("[0-" + firstCount + "]" + empresaUm.getId());
+                        appendEmpresaOnByte(tempFiles[2], empresaUm);
+                        empresaUm = deserializeEmpresa(tempFiles[0]);
+                    } catch (EOFException e) {
+                        firstCount += 10;
+                    }
+                    firstCount++;
+                }
+
+                if (empresaDois.getId() < empresaUm.getId() && seccondCount < blocos) {
+                    try {
+                        System.out.println("[1-" + seccondCount + "]" + empresaDois.getId());
+                        appendEmpresaOnByte(tempFiles[3], empresaDois);
+                        empresaDois = deserializeEmpresa(tempFiles[1]);
+
+                    } catch (EOFException e) {
+                        seccondCount += 10;
+                    }
+                    seccondCount++;
+                }
+
+                /** Check if we can return */
+                try {
+                    deserializeEmpresa(tempFiles[0]);
+                    deserializeEmpresa(tempFiles[1]);
+                } catch (EOFException e) {
+                    done = true;
+                }
+                if (seccondCount == blocos && firstCount == blocos)
+                    break;
+
+            }
+
+            firstCount = 0;
+            seccondCount = 0;
+            if (done)
+                break;
+        } while (!(eof(tempFiles[0]) && eof(tempFiles[1])));
     }
 
     public void printIntercaleTmp() throws IOException {
